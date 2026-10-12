@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Road Works Coordination Dashboard</title>
+<meta name="description" content="Web GIS dashboard for coordinating road works by contractor, sector and status (synthetic demo data).">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Road Works Coordination</h1>
+    <p>Segments by contractor, sector and status · <span id="asof"></span></p>
+  </div>
+  <span class="badge">Synthetic demo data</span>
+</header>
+
+<section class="kpis" id="kpis"></section>
+
+<div class="layout">
+  <aside class="panel">
+    <div class="filters">
+      <label>Sector<select id="f-sector"><option value="">All sectors</option></select></label>
+      <label>Contractor<select id="f-contractor"><option value="">All contractors</option></select></label>
+      <label>Class<select id="f-class"><option value="">All classes</option></select></label>
+      <label>Start window<select id="f-window">
+        <option value="">Any time</option>
+        <option value="30">Active + next 30 days</option>
+        <option value="7">Active + next 7 days</option>
+      </select></label>
+      <label class="chk"><input type="checkbox" id="f-dups"> Show duplicates flagged for cancellation</label>
+      <input type="search" id="f-search" placeholder="Search project code or district…">
+    </div>
+
+    <h2>Distribution by contractor</h2>
+    <div class="chart-wrap"><canvas id="donut"></canvas></div>
+    <table class="tbl" id="tbl">
+      <thead><tr><th>Contractor</th><th class="r">Active</th><th class="r">Coord.</th><th class="r">Total</th><th class="r">%</th></tr></thead>
+      <tbody></tbody><tfoot></tfoot>
+    </table>
+    <div class="btns">
+      <button id="dl-csv">Download CSV</button>
+      <button id="dl-geojson">Download GeoJSON</button>
+    </div>
+    <p class="foot">Data produced by the <b>Road Works Data Pipeline</b> (Python → PostGIS → REST API).<br>
+      Basemaps © OpenStreetMap, CARTO, Esri. Built by Amna Abdein.</p>
+  </aside>
+
+  <main class="mapbox">
+    <div id="map"></div>
+    <div class="map-ui">
+      <div class="seg" id="basemap"><button data-b="light" class="on">Map</button><button data-b="imagery">Imagery</button></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </main>
+</div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/chart.umd.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
