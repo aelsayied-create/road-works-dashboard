@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Road Works Coordination Dashboard</title>
-<meta name="description" content="Web GIS dashboard for coordinating road works by contractor, sector and status (synthetic demo data).">
+<meta name="description" content="Web GIS dashboard for coordinating road works by contractor, sector and status (anonymised sample data).">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="style.css?v=2">
 </head>
@@ -14,7 +14,7 @@
     <h1>Road Works Coordination</h1>
     <p>Segments by contractor, sector and status · <span id="asof"></span></p>
   </div>
-  <span class="badge">Synthetic demo data</span>
+  <span class="badge">Anonymised sample data</span>
 </header>
 
 <section class="kpis" id="kpis"></section>
@@ -44,7 +44,7 @@
       <button id="dl-csv">Download CSV</button>
       <button id="dl-geojson">Download GeoJSON</button>
     </div>
-    <p class="foot">Data produced by the <b>Road Works Data Pipeline</b> (Python → PostGIS → REST API).<br>
+    <p class="foot">Anonymised sample of 200 road segments: contractor names replaced with A–E, project codes, permits and consultants removed.<br>
       Basemaps Esri, © OpenStreetMap contributors. Built by Amna Abdein.</p>
   </aside>
 
@@ -59,6 +59,6 @@
 
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/chart.umd.js"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
 // Road Works Coordination Dashboard — Leaflet + Chart.js, no build step.
 (async function () {
   const DATA_URL = "data/segments.geojson"; // or the pipeline's REST API: <api>/segments?include_duplicates=true
-  const TODAY = new Date("2026-10-01");     // "as of" date of the sample data
+  const TODAY = new Date("2026-10-05");     // "as of" date of the data snapshot
   const fc = await fetch(DATA_URL).then(r => r.json());
   const all = fc.features;
 
-  const STATUS_COLORS = { "Active": "#2a9d8f", "Coordinated": "#3a86ff", "Initially Closed": "#8d6e63", "Cancelled": "#b3b3b3" };
+  const STATUS_COLORS = { "Active": "#2a9d8f", "Coordinated": "#3a86ff", "Initially Closed": "#8d6e63", "Finally Closed": "#5c4037", "Pending Change": "#e9c46a", "Cancelled": "#b3b3b3" };
   const PALETTE = ["#2a9d8f", "#e9c46a", "#264653", "#3a86ff", "#f4a261", "#8d6e63"];
   const fmt = n => n.toLocaleString("en-US");
   const uniq = k => [...new Set(all.map(f => f.properties[k]))].sort();
