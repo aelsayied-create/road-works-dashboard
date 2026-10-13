@@ -3,62 +3,120 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Road Works Coordination Dashboard</title>
-<meta name="description" content="Web GIS dashboard for coordinating road works by contractor, sector and status (anonymised sample data).">
+<title>Road Works Coordination</title>
+<meta name="description" content="Web GIS dashboard for coordinating road works: explore the map, read the insights, or follow the guided data story (anonymised sample data).">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <header class="top">
-  <div>
+  <div class="brand">
     <h1>Road Works Coordination</h1>
-    <p>Segments by contractor, sector and status · <span id="asof"></span></p>
+    <p>Anonymised sample · snapshot as of <span id="asof"></span></p>
   </div>
-  <span class="badge">Anonymised sample data</span>
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" data-view="explore" aria-selected="true">Explore</button>
+    <button role="tab" data-view="insights" aria-selected="false">Insights</button>
+    <button role="tab" data-view="story" aria-selected="false">Story</button>
+  </nav>
+  <span class="badge" title="Contractors renamed A–E; codes, permits and place names replaced">Sample data</span>
 </header>
 
-<section class="kpis" id="kpis"></section>
+<section class="filterbar" id="filterbar" aria-label="Filters">
+  <div class="chips" id="f-sector" role="group" aria-label="Sector"></div>
+  <select id="f-contractor" aria-label="Contractor"><option value="">All contractors</option></select>
+  <select id="f-status" aria-label="Status"><option value="">All statuses</option></select>
+  <select id="f-class" aria-label="Class"><option value="">All classes</option></select>
+  <select id="f-window" aria-label="Start window">
+    <option value="">Any start date</option>
+    <option value="30">Active + starting in 30 days</option>
+    <option value="90">Active + starting in 90 days</option>
+  </select>
+  <input type="search" id="f-search" placeholder="Search segment or district…" aria-label="Search">
+  <button class="reset" id="f-reset">Reset</button>
+</section>
 
-<div class="layout">
-  <aside class="panel">
-    <div class="filters">
-      <label>Sector<select id="f-sector"><option value="">All sectors</option></select></label>
-      <label>Contractor<select id="f-contractor"><option value="">All contractors</option></select></label>
-      <label>Class<select id="f-class"><option value="">All classes</option></select></label>
-      <label>Start window<select id="f-window">
-        <option value="">Any time</option>
-        <option value="30">Active + next 30 days</option>
-        <option value="7">Active + next 7 days</option>
-      </select></label>
-      <label class="chk"><input type="checkbox" id="f-dups"> Show duplicates flagged for cancellation</label>
-      <input type="search" id="f-search" placeholder="Search project code or district…">
+<section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+<!-- MAP VIEWS (Explore + Story share the map) -->
+<div class="layout" id="map-layout">
+  <aside class="panel" id="panel-explore">
+    <div class="panel-h">
+      <h2>Contractor workload</h2>
+      <div class="seg" id="colorby" role="group" aria-label="Colour map by">
+        <button data-c="status" class="on">Status</button><button data-c="class">Class</button><button data-c="contractor">Contractor</button>
+      </div>
     </div>
-
-    <h2>Distribution by contractor</h2>
-    <div class="chart-wrap"><canvas id="donut"></canvas></div>
+    <p class="hint">Segments per contractor, split by status. Click a bar to filter.</p>
+    <div class="chart-wrap" style="height:210px"><canvas id="c-workload" aria-label="Segments per contractor by status"></canvas></div>
     <table class="tbl" id="tbl">
-      <thead><tr><th>Contractor</th><th class="r">Active</th><th class="r">Coord.</th><th class="r">Total</th><th class="r">%</th></tr></thead>
+      <thead><tr><th>Contractor</th><th class="r">Segments</th><th class="r">km</th><th class="r">Active</th><th class="r">Available</th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
     </table>
     <div class="btns">
       <button id="dl-csv">Download CSV</button>
       <button id="dl-geojson">Download GeoJSON</button>
     </div>
-    <p class="foot">Anonymised sample of 200 road segments: contractor names replaced with A–E, project codes, permits and consultants removed.<br>
-      Basemaps Esri, © OpenStreetMap contributors. Built by Amna Abdein.</p>
+  </aside>
+
+  <aside class="panel story" id="panel-story" hidden>
+    <div class="story-top">
+      <span class="eyebrow" id="st-count"></span>
+      <div class="dots" id="st-dots"></div>
+    </div>
+    <h2 id="st-title"></h2>
+    <div class="hero"><b id="st-hero"></b><span id="st-hero-l"></span></div>
+    <p class="st-text" id="st-text"></p>
+    <div class="mini" id="st-mini"></div>
+    <div class="st-nav">
+      <button id="st-prev">← Back</button>
+      <button id="st-next" class="primary">Next →</button>
+    </div>
   </aside>
 
   <main class="mapbox">
-    <div id="map"></div>
+    <div id="map" aria-label="Map of road segments"></div>
     <div class="map-ui">
-      <div class="seg" id="basemap"><button data-b="light" class="on">Map</button><button data-b="imagery">Imagery</button></div>
+      <div class="seg" id="basemap"><button data-b="gray" class="on">Map</button><button data-b="imagery">Imagery</button></div>
     </div>
     <div class="legend" id="legend"></div>
   </main>
 </div>
 
+<!-- INSIGHTS VIEW -->
+<div class="insights" id="view-insights" hidden>
+  <div class="findings" id="findings"></div>
+  <div class="grid">
+    <figure class="card wide">
+      <figcaption><h3>Planned starts by month</h3><p>Segments by start month, split by status</p></figcaption>
+      <div class="chart-wrap" style="height:260px"><canvas id="c-months"></canvas></div>
+    </figure>
+    <figure class="card">
+      <figcaption><h3>Segments by sector</h3><p>Split by coordination class</p></figcaption>
+      <div class="chart-wrap" style="height:240px"><canvas id="c-sector"></canvas></div>
+    </figure>
+    <figure class="card">
+      <figcaption><h3>Network length by contractor</h3><p>Kilometres of road in the sample</p></figcaption>
+      <div class="chart-wrap" style="height:240px"><canvas id="c-km"></canvas></div>
+    </figure>
+    <figure class="card">
+      <figcaption><h3>Class mix by contractor</h3><p>Share of each contractor's segments (%)</p></figcaption>
+      <div class="chart-wrap" style="height:240px"><canvas id="c-mix"></canvas></div>
+    </figure>
+    <figure class="card">
+      <figcaption><h3>Busiest districts</h3><p>Top 8 by number of segments</p></figcaption>
+      <table class="tbl bars" id="t-districts"><thead><tr><th>District</th><th>Segments</th><th class="r">km</th></tr></thead><tbody></tbody></table>
+    </figure>
+  </div>
+</div>
+
+<footer class="foot">
+  Anonymised sample of 200 road segments: contractors renamed A–E; codes, permits, consultants and place names replaced.
+  Basemaps: Esri, © OpenStreetMap contributors. Built by Amna Abdein · Leaflet · Chart.js.
+</footer>
+
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/chart.umd.js"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

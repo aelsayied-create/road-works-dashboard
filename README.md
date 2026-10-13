@@ -11,14 +11,11 @@ A web GIS dashboard for coordinating road works across a city: which segments ar
 ![screenshot](docs/screenshot.png)
 
 ## Features
-- Road segments on an interactive map, coloured by status, with detailed pop-ups
-- Filters: sector, contractor, class (Utilized / Available / Wasted), start window (active + next 7/30 days), free-text search
-- Duplicates flagged by the pipeline can be shown as dashed lines
-- KPI cards, contractor distribution doughnut and summary table (click a row to filter)
-- Light map / satellite imagery switch
-- Export of the filtered view as **CSV** or **GeoJSON**
-- Optional site-wide **password gate** via a Netlify Edge Function
-- Responsive layout; no build step, libraries vendored for reliability
+Three views, one shared set of filters:
+- **Explore**: road segments on an interactive map, coloured by status, class or contractor, with hover highlight and detailed pop-ups. Filters for sector, contractor, status, class, start window (active + next 30/90 days) and free-text search. Contractor workload chart and summary table (click to filter). Export of the filtered view as **CSV** or **GeoJSON**.
+- **Insights**: auto-generated key findings, planned starts by month, segments by sector and class, network length by contractor, class mix by contractor and the busiest districts.
+- **Story**: a six-step guided data story (network overview → active works → coordinated without permit → wasted windows → next 30 days → busiest sector). Each step flies the map to the relevant segments, highlights them and explains what they mean. Arrow keys work too.
+- Light/dark mode, responsive layout, colour palettes checked for colour-blind separation, no build step (libraries vendored).
 
 ## How it fits together
 ```
